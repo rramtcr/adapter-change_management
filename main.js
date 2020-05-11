@@ -5,8 +5,8 @@ const options = {
 =======
  // url: 'https://dev69472.service-now.com/',
 >>>>>>> c3f809c031f910e538fd0e570048cb5c9714a61e
-  url: 'https://dev91836.service-now.com/',  
-  username: 'ramanarayanan.raman@centurylink.com',
+  url: 'https://dev75823.service-now.com/',  
+  username: 'admin',
   password: 'Krithi@7481'
 };
 
