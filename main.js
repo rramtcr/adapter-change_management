@@ -129,6 +129,6 @@ callback(data,error)
  }); 
 } 
   } 
-module.exports = ServiceNowAdapter;
+module.exports = ServiceNowAdapter; 
 
 
