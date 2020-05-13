@@ -1,47 +1,69 @@
 // Update this constant with your ServiceNow credentials
 const options = {
-    url: 'https://dev75823.service-now.com/',
-    username: 'admin',
-    password: 'Krithi@7481$',
-    serviceNowTable: 'change_request'
+  url: 'https://dev75823.service-now.com/',
+  username: 'admin',
+  password: 'Krithi@7481$',
+   serviceNowTable: 'change_request',
 };
+
+ 
 
 // Import built-in Node.js package path.
 const path = require('path');
 
+ 
+
 /**
-* Import the ServiceNowConnector class from local Node.js module connector.js.
-*   and assign it to constant ServiceNowConnector.
-* When importing local modules, IAP requires an absolute file reference.
-* Built-in module path's join method constructs the absolute filename.
-*/
+ * Import the ServiceNowConnector class from local Node.js module connector.js.
+ *   and assign it to constant ServiceNowConnector.
+ * When importing local modules, IAP requires an absolute file reference.
+ * Built-in module path's join method constructs the absolute filename.
+ */
 const ServiceNowConnector = require(path.join(__dirname, './connector.js'));
 
+ 
+
 /**
-* @function mainOnObject
-* @description Instantiates an object from the imported ServiceNowConnector class
-*   and tests the object's get and post methods.
-*/
+ * @function mainOnObject
+ * @description Instantiates an object from the imported ServiceNowConnector class
+ *   and tests the object's get and post methods.
+ */
 function mainOnObject() {
-    // Instantiate an object from class ServiceNowConnector.
-    const connector = new ServiceNowConnector(options);
-    // Test the object's get and post methods.
-    // You must write the arguments for get and post.
-    connector.get({ serviceNowTable: options.serviceNowTable }, (data, error) => {
-        if (error) {
-            console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
-        }
-        console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`)
-    });
-    connector.post({ serviceNowTable: options.serviceNowTable }, (data, error) => {
-        if (error) {
-            console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
-        }
-        console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`)
-    });
+  // Instantiate an object from class ServiceNowConnector.
+  const connector = new ServiceNowConnector(options);
+  // Test the object's get and post methods.
+  // You must write the arguments for get and post.
+//   connector.get(options.serviceNowTable, (data,error)=>{
+//       if (error) {
+//       console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+//     }
+//     console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
+  
+//   });
+//connector.get(options.serviceNowTable);
+connector.get((results,error)=>{
+    if (error) {
+      console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+    }
+     console.log(`\nResponse returned from GET request:\n${JSON.stringify(results)}`);
+  
 
-}
+ 
 
+ });
+
+ 
+
+  connector.post((results,error)=>{
+      if (error) {
+      console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
+    }
+     console.log(`\nResponse returned from POST request:\n${JSON.stringify(results)}`);
+  
+
+ 
+
+ });
+}//
 // Call mainOnObject to run it.
 mainOnObject();
-

@@ -2,7 +2,6 @@ const request = require('request');
 
 const validResponseRegex = /(2\d\d)/;
 
-
 /**
  * The ServiceNowConnector class.
  *
@@ -10,7 +9,7 @@ const validResponseRegex = /(2\d\d)/;
  * @description This class contains properties and methods to execute the
  *   ServiceNow Change Request product's APIs.
  */
-class ServiceNowConnector {
+class ServiceNowConnector { 
 
   /**
    * @memberof ServiceNowConnector
@@ -27,7 +26,93 @@ class ServiceNowConnector {
   constructor(options) {
     this.options = options;
   }
+   constructUri(serviceNowTable, query = null) {
+  let uri = `/api/now/table/${serviceNowTable}`;
+  if (query) {
+    uri = uri + '?' + query;
+  }
+  return uri;
+}
 
+
+ isHibernating(response,body) {
+  return response.body.includes('Instance Hibernating page')
+  && response.body.includes('<html>')
+  && response.statusCode === 200;
+}
+
+ processRequestResults(error, response, body, callback) {
+    let callbackData=null;
+    let callbackError=null;
+  /**
+   * You must build the contents of this function.
+   * Study your package and note which parts of the get()
+   * and post() functions evaluate and respond to data
+   * and/or errors the request() function returns.
+   * This function must not check for a hibernating instance;
+   * it must call function isHibernating.
+   */
+
+   if (error) {
+       console.error('error');
+       callbackError=error;
+   }
+   else if(!validResponseRegex.test(response.statusCode)){
+       console.error('bad response code');
+       callbackError=response;
+   }else if(this.isHibernating(response,body)){
+         callbackError= 'ServiceNow Instance is hibernating';
+       console.error(callbackError);
+   }else{
+      callbackData=response;
+   //  callbackData=body;
+   }
+ //  return callback;
+ //console.log(`\ndata.................${JSON.stringify(callbackData)}`);
+//return callback(callbackData,callbackError);
+// (callbackData,callbackError)=>callback(data,error);
+
+callback(callbackData,callbackError);
+ }
+
+ sendRequest(callOptions, callback) {
+  // Initialize return arguments for callback
+ let processedResults;
+   let processedError;
+  let uri;
+  if (callOptions.query)
+    uri = this.constructUri(callOptions.serviceNowTable, callOptions.query);
+  else
+    uri = this.constructUri(callOptions.serviceNowTable);
+  /**
+   * You must build the requestOptions object.
+   * This is not a simple copy/paste of the requestOptions object
+   * from the previous lab. There should be no
+   * hardcoded values.
+   */
+  const requestOptions = {
+      method: callOptions.method,
+       
+      auth: {
+    user:this. options.username,
+    pass: this.options.password,
+      },
+      baseUrl:this. options.url,
+      uri: uri,
+  };
+//    console.log(requestOptions.method);
+//    console.log(requestOptions.auth.user);
+//    console.log(requestOptions.auth.pass);
+//    console.log(requestOptions.baseUrl);
+//   console.log(requestOptions.uri);
+  request(requestOptions, (error, response, body) => {
+    //  console.log(response);
+    this.processRequestResults(error, response, body, (processedResults, processedError)=>
+   //  console.log(`\ndata.................${JSON.stringify(processedResults)}`); 
+     callback(processedResults, processedError));    
+  });
+}
+ 
   /**
    * @callback iapCallback
    * @description A [callback function]{@link
@@ -57,12 +142,24 @@ class ServiceNowConnector {
    * @param {error} callback.error - The error property of callback.
    */
   get(callback) {
-    let getCallOptions = { ...this.options };
+    let getCallOptions = this.options;
     getCallOptions.method = 'GET';
     getCallOptions.query = 'sysparm_limit=1';
-    this.sendRequest(getCallOptions, (results, error) => callback(results, error));   
+    this.sendRequest(getCallOptions, (results, error) => callback(results,error));
+//     {
+// if (error) {
+//       console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+//     }
+//     console.log(`\nResponse returned from GET request:\n${JSON.stringify(results)}`);
+ 
+// });   
   }
 
+   post(callback) {
+      let postCallOptions = this.options;
+  postCallOptions.method = 'POST';
+  this.sendRequest(postCallOptions, (results, error) =>
+callback(results,error));
+   }
 }
-
 module.exports = ServiceNowConnector;
